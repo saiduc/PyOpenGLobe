@@ -9,7 +9,7 @@ def main():
     pygame.init()
     display = (400, 400)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-
+    pygame.key.set_repeat(1, 10)
     gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
     glTranslatef(0.0, 0.0, -5)
     # glRotatef(20, 0, 0, 0)
@@ -19,6 +19,21 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    glRotatef(1, 0, 1, 0)
+                if event.key == pygame.K_RIGHT:
+                    glRotatef(1, 0, -1, 0)
+                if event.key == pygame.K_UP:
+                    glRotatef(1, -1, 0, 0)
+                if event.key == pygame.K_DOWN:
+                    glRotatef(1, 1, 0, 0)
+                # if event.key == pygame.K_z:
+                #     glTranslatef(0, 0, 0.1)
+                # if event.key == pygame.K_x:
+                #     glTranslatef(0, 0, -0.1)
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         # Adds Lighting, not using for now
@@ -33,10 +48,11 @@ def main():
         # glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
         # glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
         # glEnable(GL_LIGHT0)
+        # glRotatef(1, 1, 1, 1)
 
-        glRotatef(1, 3, 1, 1)
         glColor3fv((0, 1, 0))
         glutWireSphere(1, 100, 20)
+        # glutSolidSphere(1,100,20)
         pygame.display.flip()
         pygame.time.wait(10)
 
