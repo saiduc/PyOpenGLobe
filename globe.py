@@ -4,20 +4,47 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
+from PIL import Image
+import numpy
+
+
+def read_texture(filename):
+    """
+    Reads an image file and converts to a OpenGL-readable textID format
+    """
+    img = Image.open(filename)
+    img_data = numpy.array(list(img.getdata()), numpy.int8)
+    textID = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, textID)
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 img.size[0], img.size[1], 0, GL_RGB, GL_UNSIGNED_BYTE, img_data)
+    return textID
 
 
 def main():
     pygame.init()
     display = (400, 400)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-    pygame.key.set_repeat(1, 10)
-    gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
-    glTranslatef(0.0, 0.0, -5)
+    pygame.display.set_caption('PyOpenGLobe')
+    pygame.key.set_repeat(1, 10)    # allows press and hold of buttons
+    gluPerspective(40, (display[0]/display[1]), 0.1, 50.0)
+    glTranslatef(0.0, 0.0, -5)    # sets initial zoom so we can see globe
     lastPosX = 0
     lastPosY = 0
+    texture = read_texture('world.jpg')
 
     while True:
-        for event in pygame.event.get():
+        for event in pygame.event.get():    # user avtivities are called events
+
+            # Exit cleanly if user quits window
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
@@ -64,26 +91,19 @@ def main():
                 lastPosX = x
                 lastPosY = y
 
-            # rotate(event)
-
+        # Creates Sphere and wraps texture
+        glEnable(GL_DEPTH_TEST)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        # Adds Lighting, not using for now
-        # glShadeModel(GL_SMOOTH)
-        # glEnable(GL_CULL_FACE)
-        # glEnable(GL_DEPTH_TEST)
-        # glEnable(GL_LIGHTING)
-        # lightZeroPosition = [45., 4., 10., 1.]
-        # lightZeroColor = [0.8, 1.0, 0.8, 100.0]  # green tinged
-        # glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
-        # glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
-        # glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
-        # glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
-        # glEnable(GL_LIGHT0)
-        # glRotatef(1, 1, 1, 1)
-        glColor3fv((0, 1, 0))
-        glutWireSphere(1, 100, 20)
-        # glutSolidSphere(1,100,20)
+        qobj = gluNewQuadric()
+        gluQuadricTexture(qobj, GL_TRUE)
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, texture)
+        gluSphere(qobj, 1, 50, 50)
+        gluDeleteQuadric(qobj)
+        glDisable(GL_TEXTURE_2D)
+
+        # Displays pygame window
         pygame.display.flip()
         pygame.time.wait(10)
 
