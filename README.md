@@ -34,3 +34,4 @@ This project is licensed under the terms of the MIT license. Do whatever you wan
 * A great tutorial that I used to get started with PyOpenGL: https://www.youtube.com/watch?v=R4n4NyDG2hI
 * Texturing a sphere from: https://stackoverflow.com/questions/42986754/pyopengl-sphere-with-texture?answertab=oldest#tab-top 
 * Click and drag from: http://goldsequence.blogspot.com/2017/04/using-mouse-for-object-zoom-inzoom.html
+* Texture image from: http://planetpixelemporium.com/earth.html
